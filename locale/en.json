@@ -1,0 +1,9 @@
+{
+  "translations": {
+    "viewtodo": "View Todo",
+    "addtodo": "Add Todo",
+    "logout": "Logout",
+    "changelang": "Change Language",
+    "darktheme": "Dark Theme"
+  }
+}

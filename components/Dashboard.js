@@ -10,24 +10,14 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useState, useReducer, useEffect } from "react";
-import AuthReducer from "../Context/authReducer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import TodoItem from "./todoItem";
 import Firebase from "../config/firebase";
 import { AuthContext } from "../Context/authContext";
 import ChartReducer from "../Context/chartReducer";
-import { getAuth } from "firebase/auth";
-import DateTimePickerComponent from "./dateTimePickerComponent";
-import {
-  LineChart,
-  BarChart,
-  PieChart,
-  ProgressChart,
-  ContributionGraph,
-  StackedBarChart,
-} from "react-native-chart-kit";
+import { LineChart } from "react-native-chart-kit";
 import axios from "axios";
 import ModalTester from "./addQtyWater";
+import WaterLog from "./waterLog";
 export default function Dashboard() {
   const [todos, setTodos] = useState([
     { text: "Buy Coffee", key: "1" },
@@ -48,6 +38,7 @@ export default function Dashboard() {
     ChartReducer.chartReducer,
     ChartReducer.initialState
   );
+
   const authData = Firebase.auth();
   const userData = Firebase.auth().currentUser;
   const [initializing, setInitializing] = useState(true);
@@ -64,7 +55,6 @@ export default function Dashboard() {
   };
 
   useEffect(async () => {
-    let token;
     setTimeout(async () => {
       try {
         userToken = null;
@@ -75,7 +65,9 @@ export default function Dashboard() {
       }
       let data = await AsyncStorage.getItem("userEmail");
       axios
-        .get(`https://my-server-zarana.herokuapp.com/userReport?email=${data}`)
+        .get(
+          `https://my-server-zarana.herokuapp.com/userLogDateWise?email=${data}`
+        )
         .then((res) => {
           if (res?.data) {
             setChange(res?.data);
@@ -114,14 +106,10 @@ export default function Dashboard() {
   };
 
   let qty = chartState?.chartData.map((e) => e.quantity);
-  let qtyLabel = qty.filter((data, index) => index < 7);
 
-  // console.log(new Date(19 / 3 / 2021));
-  // let date = "19/03/2021";
-  // console.log(date.split("/")[0]);
+  let qtyLabel = qty.filter((data, index) => index < 7);
   const dates = [];
-  // let parseData;
-  let time = chartState?.chartData.map((e) => e.date);
+  let time = chartState?.chartData.map((e) => e.date).reverse();
   let timeLabel = time
     .filter((data, index) => index < 7)
     .map((date) => {
@@ -129,8 +117,6 @@ export default function Dashboard() {
       let parseData = parseInt(newDate);
       dates.push(parseData);
     });
-  // dates.map((date) => console.log(typeof date));
-  console.log(typeof dates);
   const data = {
     labels: dates,
 
@@ -143,48 +129,51 @@ export default function Dashboard() {
     ],
     legend: ["Drinked Water"], // optional
   };
-  const screenWidth = Dimensions.get("window").width;
   return (
-    <View style={styles.container}>
-      <ScrollView>
-        <View style={styles.container}>
-          <Text style={styles.title}>DateWise Progession</Text>
-
-          <LineChart
-            withDots={true}
-            data={data}
-            width={Dimensions.get("window").width} // from react-native
-            height={220}
-            // yAxisLabel="$"
-            yAxisSuffix=" ml "
-            yAxisInterval={2} // optional, defaults to 1
-            chartConfig={{
-              backgroundColor: "#e26a00",
-              backgroundGradientFrom: "#fb8c00",
-              backgroundGradientTo: "#ffa726",
-              decimalPlaces: 0, // optional, defaults to 2dp
-              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              style: {
+    <>
+      <View style={styles.container}>
+        <ScrollView>
+          <View style={styles.container}>
+            <Text style={styles.title}>DateWise Progession</Text>
+            <LineChart
+              withDots={true}
+              data={data}
+              width={Dimensions.get("window").width} // from react-native
+              height={220}
+              // yAxisLabel="$"
+              yAxisSuffix=" ml "
+              yAxisInterval={1} // optional, defaults to 1
+              chartConfig={{
+                backgroundColor: "#e26a00",
+                backgroundGradientFrom: "#fb8c00",
+                backgroundGradientTo: "#ffa726",
+                decimalPlaces: 0, // optional, defaults to 2dp
+                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                style: {
+                  borderRadius: 16,
+                },
+                propsForDots: {
+                  r: "6",
+                  strokeWidth: "2",
+                  stroke: "#ffa726",
+                },
+              }}
+              style={{
+                marginVertical: 8,
                 borderRadius: 16,
-              },
-              propsForDots: {
-                r: "6",
-                strokeWidth: "2",
-                stroke: "#ffa726",
-              },
-            }}
-            style={{
-              marginVertical: 8,
-              borderRadius: 16,
-            }}
-          />
-          <Text style={styles.title}>Drink Water</Text>
-          <ModalTester />
-        </View>
-      </ScrollView>
-      {/* </View> */}
-    </View>
+              }}
+            />
+            <Text style={styles.title}>Drink Water</Text>
+            <ModalTester />
+            <Text style={styles.title}>Water Log</Text>
+          </View>
+
+          {/* </View> */}
+          <WaterLog />
+        </ScrollView>
+      </View>
+    </>
   );
 }
 

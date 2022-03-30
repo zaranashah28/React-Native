@@ -18,6 +18,8 @@ import ChartReducer from "./Context/chartReducer";
 import { useTranslation } from "react-i18next";
 import { createAccount } from "./Context/authAction";
 import { chartContext } from "./Context/chartContext";
+import { quantityContext } from "./Context/quantityContext";
+import QuantityReducer from "./Context/quantityReducer";
 const auth = Firebase.auth();
 
 export default function App() {
@@ -33,6 +35,10 @@ export default function App() {
   const authReducer = AuthReducer.loginReducer;
   const authState = AuthReducer.initialState;
   const [loginState, dispatch] = useReducer(authReducer, authState);
+  const [quantityState] = useReducer(
+    QuantityReducer.quantityReducer,
+    QuantityReducer.initialState
+  );
   const [chartState, dispatch2] = useReducer(
     ChartReducer.chartReducer,
     ChartReducer.initialState
@@ -54,24 +60,6 @@ export default function App() {
     },
   }));
 
-  // const chartContextData = useMemo(() => ({
-  //   fetchRequest: () => {
-  //     dispatch2({
-  //       type: "FETCH_CHART_REQUEST",
-  //     });
-  //   },
-  //   fetchSuccess: () => {
-  //     dispatch2({
-  //       type: "FETCH_CHART_SUCCESS",
-  //     });
-  //   },
-  //   fetchFail: () => {
-  //     dispatch2({
-  //       type: "FETCH_CHART_FAIL",
-  //     });
-  //   },
-  // }));
-
   const authContext = useMemo(
     () => ({
       signIn: async (username, password, Google) => {
@@ -80,11 +68,7 @@ export default function App() {
           await AsyncStorage.setItem("userEmail", username);
 
           dispatch({ type: "LOGIN", id: username, token: password });
-        }
-        // let userToken;
-        // userToken = String(foundUser[0].userToken);
-        // const userName = foundUser[0].username;
-        else {
+        } else {
           try {
             response = await auth.signInWithEmailAndPassword(
               username,
@@ -139,25 +123,27 @@ export default function App() {
   }
   const Stack = createStackNavigator();
   return (
-    <chartContext.Provider value={{ chart: chartState }}>
-      <themeContext.Provider value={{ mode: themeState, themeContextData }}>
-        <AuthContext.Provider value={{ auth: loginState, authContext }}>
-          <NavigationContainer>
-            {loginState.userToken !== null ? (
-              <Stack.Navigator>
-                <Stack.Screen
-                  name="MyDrawer"
-                  component={MyDrawer}
-                  options={{ headerShown: false }}
-                />
-              </Stack.Navigator>
-            ) : (
-              // <MyDrawer />
-              <RootStackScreen />
-            )}
-          </NavigationContainer>
-        </AuthContext.Provider>
-      </themeContext.Provider>
-    </chartContext.Provider>
+    <quantityContext.Provider value={{ qty: quantityState }}>
+      <chartContext.Provider value={{ chart: chartState }}>
+        <themeContext.Provider value={{ mode: themeState, themeContextData }}>
+          <AuthContext.Provider value={{ auth: loginState, authContext }}>
+            <NavigationContainer>
+              {loginState.userToken !== null ? (
+                <Stack.Navigator>
+                  <Stack.Screen
+                    name="MyDrawer"
+                    component={MyDrawer}
+                    options={{ headerShown: false }}
+                  />
+                </Stack.Navigator>
+              ) : (
+                // <MyDrawer />
+                <RootStackScreen />
+              )}
+            </NavigationContainer>
+          </AuthContext.Provider>
+        </themeContext.Provider>
+      </chartContext.Provider>
+    </quantityContext.Provider>
   );
 }

@@ -13,7 +13,7 @@ const chartReducer = (prevState, action) => {
     case "FETCH_CHART_REQUEST":
       return {
         loading: false,
-        chartData: action.data,
+        // chartData: action.data,
       };
     case "FETCH_CHART_SUCCESS":
       return {

@@ -45,42 +45,68 @@ function ModalTester(props) {
   const addWaterQty = async (number, time) => {
     let numInt = parseInt(number);
     let username = await AsyncStorage.getItem("userEmail");
-    // let date =
-    //   time.getDate() + "/" + (time.getMonth() + 1) + "/" + time.getFullYear();
-    let date = "30/3/2022";
+    let date =
+      time.getDate() + "/" + (time.getMonth() + 1) + "/" + time.getFullYear();
+    // let date = "30/3/2022";
     let timeValue = time.getHours() + ":" + time.getMinutes();
     axios
       .get(
         `https://my-server-zarana.herokuapp.com/userLogDateWise?email=${username}&date=${date}`
       )
       .then((res) => {
-        console.log(res.data.length);
         if (res.data.length === 0) {
           axios
-            .post(`https://my-server-zarana.herokuapp.com/userLogDateWise`, {
+            .post(`https://my-server-zarana.herokuapp.com/userQty`, {
               email: username,
-              quantity: numInt,
+              quantity: [numInt],
+              totalLog: numInt,
               date: date,
               time: timeValue,
             })
-            .then((res1) => {})
-            .catch((err) => console.log(err, "ERR"));
-          axios
-            .post("https://my-server-zarana.herokuapp.com/userReport", {
-              email: username,
-              quantity: numInt,
-              date: date,
-              time: timeValue,
+            .then((data) => {
+              axios
+                .post(
+                  `https://my-server-zarana.herokuapp.com/userLogDateWise`,
+                  {
+                    email: username,
+                    quantity: numInt,
+                    date: date,
+                    time: timeValue,
+                  }
+                )
+                .then((res1) => {
+                  axios
+                    .post("https://my-server-zarana.herokuapp.com/userReport", {
+                      email: username,
+                      quantity: numInt,
+                      date: date,
+                      time: timeValue,
+                    })
+                    .then((res2) => {
+                      setModalVisible(!isModalVisible);
+                    })
+                    .catch((err) => console.log(err, "userReport"));
+                })
+                .catch((err) => console.log(err, "logwise"));
             })
-            .then((res2) => {
-              dispatch1({ type: "ADD_QTY_SUCCESS", data: res1.data });
-
-              setModalVisible(!isModalVisible);
-            })
-            .catch((err) => console.log(err, "ERROR"));
-          console.log("IF");
+            .catch((err) => console.log(err, "userQTY"));
         } else {
-          console.log(username, numInt, date, timeValue);
+          axios
+            .get(`https://my-server-zarana.herokuapp.com/userQty`)
+            .then((user) => {
+              console.log(user.data[0].quantity[0], "QTY");
+              axios.put(
+                `https://my-server-zarana.herokuapp.com/userQty/${res.data[0].id}`,
+                {
+                  email: username,
+                  quantity: [user.data[0].quantity[0], numInt],
+                  totalLog: numInt + res.data[0].quantity,
+                  date: date,
+                  time: timeValue,
+                }
+              );
+            });
+
           axios
             .post("https://my-server-zarana.herokuapp.com/userReport", {
               email: username,
@@ -89,11 +115,10 @@ function ModalTester(props) {
               time: timeValue,
             })
             .then((res3) => {
-              dispatch1({ type: "ADD_QTY_SUCCESS", data: res1.data });
               setModalVisible(!isModalVisible);
             })
-            .catch((err) => console.log(err, "ERR"));
-          console.log(res.data[0].id);
+            .catch((err) => console.log(err, "elseuserreport"));
+          console.log(res.data.id);
           axios
             .put(
               `https://my-server-zarana.herokuapp.com/userLogDateWise/${res.data[0].id}`,

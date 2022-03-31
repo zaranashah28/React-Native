@@ -131,7 +131,7 @@ export default function Dashboard() {
   };
   return (
     <>
-      <View style={styles.container}>
+      <View>
         <ScrollView>
           <View style={styles.container}>
             <Text style={styles.title}>DateWise Progession</Text>
@@ -168,9 +168,9 @@ export default function Dashboard() {
             <ModalTester />
             <Text style={styles.title}>Water Log</Text>
           </View>
+          <WaterLog />
 
           {/* </View> */}
-          <WaterLog />
         </ScrollView>
       </View>
     </>

@@ -26,14 +26,6 @@ export default function Dashboard() {
     { text: "Complete React Native assignment", key: "4" },
   ]);
 
-  // const authUSER = getAuth();
-  // const user0 = authUSER.currentUser;
-  // console.log(user0, "USER0");
-  // const authReducer = AuthReducer.loginReducer;
-  // const authState = AuthReducer.initialState;
-
-  // const [state, dispatch] = useReducer(authReducer, authState);
-  // console.log(state, "State");
   const [chartState, dispatch] = useReducer(
     ChartReducer.chartReducer,
     ChartReducer.initialState
@@ -105,7 +97,7 @@ export default function Dashboard() {
     useShadowColorFromDataset: false, // optional
   };
 
-  let qty = chartState?.chartData.map((e) => e.quantity);
+  let qty = chartState?.chartData.map((e) => e.quantity).reverse();
 
   let qtyLabel = qty.filter((data, index) => index < 7);
   const dates = [];

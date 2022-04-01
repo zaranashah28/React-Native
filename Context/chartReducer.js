@@ -1,5 +1,6 @@
 const initialState = {
   loading: true,
+  reminderData:[],
   chartData: [
     {
       email: "z5@gmail.com",
@@ -24,6 +25,16 @@ const chartReducer = (prevState, action) => {
       return {
         loading: false,
         chartData: action.data,
+      };
+    case "FETCH_REMINDER_SUCCESS":
+      return {
+        loading: false,
+        reminderData: action.data,
+      };
+    case "FETCH_REMINDER_FAIL":
+      return {
+        loading: false,
+        reminderData: action.data,
       };
 
     default:

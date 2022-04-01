@@ -9,6 +9,7 @@ const initialState = {
       time: "17:30",
     },
   ],
+  reminderData:[]
 };
 
 const quantityReducer = (state, action) => {
@@ -24,6 +25,7 @@ const quantityReducer = (state, action) => {
         loading: false,
         data: action.data,
       };
+  
   }
 };
 

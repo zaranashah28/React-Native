@@ -75,6 +75,7 @@ function ModalTester(props) {
                   }
                 )
                 .then((res1) => {
+                  dispatch1({ type: "ADD_QTY_SUCCESS", data: res1?.data });
                   axios
                     .post("https://my-server-zarana.herokuapp.com/userReport", {
                       email: username,
@@ -92,20 +93,20 @@ function ModalTester(props) {
             .catch((err) => console.log(err, "userQTY"));
         } else {
           axios
-            .get(`https://my-server-zarana.herokuapp.com/userQty`)
+            .get(`https://my-server-zarana.herokuapp.com/userQty?date=${date}`)
             .then((user) => {
-              console.log(user.data[0].quantity[0], "QTY");
               axios.put(
                 `https://my-server-zarana.herokuapp.com/userQty/${res.data[0].id}`,
                 {
                   email: username,
-                  quantity: [user.data[0].quantity[0], numInt],
+                  quantity: [...user.data[0].quantity, numInt],
                   totalLog: numInt + res.data[0].quantity,
                   date: date,
                   time: timeValue,
                 }
               );
-            });
+            })
+            .then((res) => {});
 
           axios
             .post("https://my-server-zarana.herokuapp.com/userReport", {
@@ -118,7 +119,6 @@ function ModalTester(props) {
               setModalVisible(!isModalVisible);
             })
             .catch((err) => console.log(err, "elseuserreport"));
-          console.log(res.data.id);
           axios
             .put(
               `https://my-server-zarana.herokuapp.com/userLogDateWise/${res.data[0].id}`,
@@ -131,7 +131,6 @@ function ModalTester(props) {
             )
             .then((res) => setModalVisible(false))
             .catch((err) => console.log(err, "ERROR"));
-          console.log("ELSE");
         }
       });
   };
@@ -167,7 +166,7 @@ function ModalTester(props) {
             />
           </View>
           <Text style={{ marginTop: 4 }}>
-            Time:{" "}
+            Time:
             {time.getHours() +
               ":" +
               time.getMinutes() +

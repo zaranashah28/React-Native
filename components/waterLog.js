@@ -4,6 +4,7 @@ import { View, Text } from "react-native";
 import axios from "axios";
 import { EMaskUnits } from "react-native-svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ChartReducer from "../Context/chartReducer";
 
 const LeftContent = (props) => (
   <Avatar.Icon
@@ -18,6 +19,11 @@ function WaterLog() {
   const [data, setData] = React.useState([]);
   const [dateWise, setDateWise] = React.useState([]);
   const [quantity, setQuantity] = React.useState([]);
+  const [chartState, dispatch] = React.useReducer(
+    ChartReducer.chartReducer,
+    ChartReducer.initialState
+  );
+  // console.log(chartState);
 
   React.useEffect(async () => {
     let username = await AsyncStorage.getItem("userEmail");
@@ -32,17 +38,19 @@ function WaterLog() {
     <>
       {quantity.map((e, index) => {
         return (
-          <Card key={index}>
+          <Card key={e.id}>
             <Card.Title title={e.date} key={index} left={LeftContent} />
             <Title>{e.totalLog} ML</Title>
             <Card.Content>
-              {e.quantity.map((f, key) => {
+              {e.quantity.map((f) => {
                 return (
                   <>
-                    <View style={{ flexDirection: "row" }}>
+                    <View style={{ flexDirection: "row" }} key={e.id}>
                       <Paragraph
                         style={{
                           marginLeft: 10,
+                          fontSize: 10,
+                          fontWeight: "bold",
                         }}
                       >
                         {f} ML

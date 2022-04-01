@@ -9,7 +9,7 @@ const RootStack = createStackNavigator();
 
 const RootStackScreen = ({ navigation }) => (
   <RootStack.Navigator headerShown={false}>
-    <RootStack.Screen name="MyTodos" component={SplashScreen} />
+    <RootStack.Screen name="Water Reminder" component={SplashScreen} />
     <RootStack.Screen name="SignIn" component={SignIn} />
     <RootStack.Screen name="SignUp" component={SignUp} />
   </RootStack.Navigator>

@@ -5,7 +5,7 @@ import {
   DrawerItemList,
   DrawerItem,
 } from "@react-navigation/drawer";
-import AddTodo from "../components/addTodo";
+import Reminder from "../components/Reminder";
 import { Picker } from "@react-native-picker/picker";
 import { StyleSheet, TouchableOpacity, View, Text, Switch } from "react-native";
 const Drawer = createDrawerNavigator();
@@ -14,6 +14,7 @@ import { themeContext } from "../Context/themeContext";
 // const { signOut } = React.useContext(AuthContext);
 import { fontColor, drawerScreen } from "../Common/CommonColors";
 import Dashboard from "../components/Dashboard";
+import MapView from "../components/MapView";
 
 function CustomDrawerContent(props) {
   const [selectedValue, setSelectedValue] = React.useState("default");
@@ -140,7 +141,7 @@ export default function MyDrawer() {
       />
       <Drawer.Screen
         options={{
-          title: "ADD TODO",
+          title: "Reminder",
           headerTintColor: "black",
           drawerLabelStyle: { color: "black" },
           headerStyle: {
@@ -150,7 +151,21 @@ export default function MyDrawer() {
           },
         }}
         name="Add Todos"
-        component={AddTodo}
+        component={Reminder}
+      />
+      <Drawer.Screen
+        options={{
+          title: "Map View",
+          headerTintColor: "black",
+          drawerLabelStyle: { color: "black" },
+          headerStyle: {
+            backgroundColor: mode.darkMode
+              ? drawerScreen.darkmode
+              : drawerScreen.lightmode,
+          },
+        }}
+        name="Map View"
+        component={MapView}
       />
     </Drawer.Navigator>
   );
